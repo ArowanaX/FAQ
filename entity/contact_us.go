@@ -7,7 +7,7 @@ import (
 type ContactUs struct {
 	FirstName ValidNameField
 	LastName  ValidNameField
-	PhoneNum  string
+	PhoneNum  ValidPhoneNumField
 	Email     ValidEmailField
 	Message   string
 	SentMail  bool
