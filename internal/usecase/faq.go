@@ -1,6 +1,9 @@
 package usecase
 
-import "FAQ/internal/entity"
+import (
+	"FAQ/internal/entity"
+	"FAQ/internal/repository"
+)
 
 type FaqUseCase interface {
 	GetAllFaq() ([]entity.Faq, error)
@@ -9,11 +12,11 @@ type FaqUseCase interface {
 	CreateCategory(cat entity.Category) error
 }
 type faqUseCase struct {
-	faqRepo FaqRepository
+	faqRepo repository.FaqRepository
 }
 
 // constructors
-func NewFaqUseCase(Repo FaqRepository) FaqUseCase {
+func NewFaqUseCase(Repo repository.FaqRepository) FaqUseCase {
 	return &faqUseCase{faqRepo: Repo}
 }
 
