@@ -2,48 +2,51 @@ package repository
 
 import (
 	"FAQ/internal/entity"
+	"FAQ/internal/models"
 	"gorm.io/gorm"
 )
 
 type ContactRepository interface {
 	IsPhoneNumberUnique(phoneNumber string) (bool, error)
 	IsEmailUnique(email string) (bool, error)
-	PostContactUs(us entity.ContactUs) (entity.ContactUs, error)
+	Create(contact entity.ContactUs) error
 }
-type contactRepo struct {
+type contactRepository struct {
 	db *gorm.DB
 }
 
-func NewContactUseCase(db *gorm.DB) ContactRepository {
-	return &contactRepo{db: db}
+func NewContactRepository(db *gorm.DB) ContactRepository {
+	return &contactRepository{db: db}
 }
 
-func (cr *contactRepo) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
-	var contact entity.ContactUs
-	result := cr.db.First(&contact, phoneNumber)
-
-	if result.Error != nil {
-		return false, result.Error
+func (r *contactRepository) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
+	var count int64
+	err := r.db.Model(&models.ContactUsModel{}).Where("phone_num = ?", phoneNumber).Count(&count).Error
+	if err != nil {
+		return false, err
 	}
-	return true, nil
+	return count == 0, nil
 }
 
-func (cr *contactRepo) IsEmailUnique(email string) (bool, error) {
-	var contact entity.ContactUs
-	result := cr.db.First(&contact, email)
-
-	if result.Error != nil {
-		return false, result.Error
+func (r *contactRepository) IsEmailUnique(email string) (bool, error) {
+	var count int64
+	err := r.db.Model(&models.ContactUsModel{}).Where("email = ?", email).Count(&count).Error
+	if err != nil {
+		return false, err
 	}
-	return true, nil
+	return count == 0, nil
 }
 
-func (cr *contactRepo) PostContactUs(us entity.ContactUs) (entity.ContactUs, error) {
-	result := cr.db.Create(&us)
-
-	if result.Error != nil {
-		return entity.ContactUs{}, result.Error
+func (r *contactRepository) Create(contact entity.ContactUs) error {
+	contactModel := models.ContactUsModel{
+		FirstName: contact.FirstName,
+		LastName:  contact.LastName,
+		PhoneNum:  contact.PhoneNum,
+		Email:     contact.Email,
+		Message:   contact.Message,
+		SentMail:  contact.SentMail,
+		IpAddress: contact.IpAddress,
 	}
 
-	return us, nil
+	return r.db.Create(&contactModel).Error
 }
