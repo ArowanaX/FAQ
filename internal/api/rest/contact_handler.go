@@ -24,21 +24,19 @@ type ContactRequest struct {
 	Message   string `json:"message" validate:"required"`
 }
 
-// هندلر برای ثبت کانتکت جدید
 func (h *ContactHandler) CreateContact(c echo.Context) error {
 	var req ContactRequest
 
-	// پارس کردن ورودی
+	// Parse input
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
 	}
 
-	// اعتبارسنجی
 	if err := c.Validate(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	// تبدیل درخواست به entity
+	// Convert request to entity
 	contact := entity.ContactUs{
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
@@ -47,7 +45,7 @@ func (h *ContactHandler) CreateContact(c echo.Context) error {
 		Message:   req.Message,
 	}
 
-	// ذخیره در دیتابیس
+	// Commit on DB
 	createdContact, err := h.contactUseCase.CreateContact(contact)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
