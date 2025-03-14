@@ -7,19 +7,19 @@ import (
 
 type FaqRepository interface {
 	GetAllFaq() ([]entity.Faq, error)
-	GetCategorizeFaq(category entity.Category) ([]entity.Faq, error)
+	GetCategorizeFaq(categoryTitle string) ([]entity.Faq, error)
 	CreateFaq(faq entity.Faq) error
 	CreateCategory(cat entity.Category) error
 }
-type faqRepo struct {
+type faqRepository struct {
 	db *gorm.DB
 }
 
-func NewFaqUseCase(db *gorm.DB) FaqRepository {
-	return &faqRepo{db: db}
+func NewFaqRepository(db *gorm.DB) FaqRepository {
+	return &faqRepository{db: db}
 }
 
-func (fr *faqRepo) GetAllFaq() ([]entity.Faq, error) {
+func (fr *faqRepository) GetAllFaq() ([]entity.Faq, error) {
 	var faqs []entity.Faq
 	result := fr.db.Find(&faqs)
 	if result.Error != nil {
@@ -28,10 +28,10 @@ func (fr *faqRepo) GetAllFaq() ([]entity.Faq, error) {
 	return faqs, nil
 }
 
-func (fr *faqRepo) GetCategorizeFaq(category entity.Category) ([]entity.Faq, error) {
+func (fr *faqRepository) GetCategorizeFaq(categoryTitle string) ([]entity.Faq, error) {
 	var faqs []entity.Faq
 
-	result := fr.db.Where("category_title = ?", category.Title).Find(&faqs)
+	result := fr.db.Where("category_title = ?", categoryTitle).Find(&faqs)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -39,7 +39,7 @@ func (fr *faqRepo) GetCategorizeFaq(category entity.Category) ([]entity.Faq, err
 
 	return faqs, nil
 }
-func (fr *faqRepo) CreateFaq(faq entity.Faq) error {
+func (fr *faqRepository) CreateFaq(faq entity.Faq) error {
 	result := fr.db.Create(&faq)
 
 	if result.Error != nil {
@@ -47,7 +47,7 @@ func (fr *faqRepo) CreateFaq(faq entity.Faq) error {
 	}
 	return nil
 }
-func (fr *faqRepo) CreateCategory(cat entity.Category) error {
+func (fr *faqRepository) CreateCategory(cat entity.Category) error {
 	result := fr.db.Create(&cat)
 
 	if result.Error != nil {

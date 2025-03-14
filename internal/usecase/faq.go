@@ -7,7 +7,7 @@ import (
 
 type FaqUseCase interface {
 	GetAllFaq() ([]entity.Faq, error)
-	GetCategorizeFaq(category entity.Category) ([]entity.Faq, error)
+	GetCategorizeFaq(categoryTitle string) ([]entity.Faq, error)
 	CreateFaq(faq entity.Faq) error
 	CreateCategory(cat entity.Category) error
 }
@@ -25,8 +25,8 @@ func (fu *faqUseCase) GetAllFaq() ([]entity.Faq, error) {
 	return fu.faqRepo.GetAllFaq()
 }
 
-func (fu *faqUseCase) GetCategorizeFaq(category entity.Category) ([]entity.Faq, error) {
-	return fu.faqRepo.GetCategorizeFaq(category)
+func (fu *faqUseCase) GetCategorizeFaq(categoryTitle string) ([]entity.Faq, error) {
+	return fu.faqRepo.GetCategorizeFaq(categoryTitle)
 }
 
 func (fu *faqUseCase) CreateFaq(faq entity.Faq) error {
